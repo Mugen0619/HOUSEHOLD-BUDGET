@@ -1,0 +1,72 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 280px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.typeLabel {
+  font-size: 14px;
+  color: #6b6375;
+}
+
+.field input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.fieldError {
+  color: #e03131;
+  font-size: 12px;
+  margin: 0;
+}
+
+.formError {
+  color: #e03131;
+  background: #fff5f5;
+  border: 1px solid #ffc9c9;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.actions button {
+  border-radius: 4px;
+  padding: 8px 20px;
+  cursor: pointer;
+}
+
+.actions button[type='submit'] {
+  background: #4c6ef5;
+  color: #fff;
+  border: none;
+}
+
+.actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.actions button[type='button'] {
+  background: #fff;
+  border: 1px solid #ccc;
+}

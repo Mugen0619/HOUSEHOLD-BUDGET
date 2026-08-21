@@ -1,0 +1,83 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.toolbar button {
+  background: #4c6ef5;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.toolbar button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: 12px 16px;
+}
+
+.filterItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.filterItem input,
+.filterItem select {
+  padding: 4px 6px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #e5e4e7;
+  font-size: 14px;
+}
+
+.actionsCell button {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.empty {
+  text-align: center;
+  color: #6b6375;
+  padding: 24px;
+}
+
+.loading {
+  color: #6b6375;
+}
+
+.error {
+  color: #e03131;
+  background: #fff5f5;
+  border: 1px solid #ffc9c9;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin: 0;
+}

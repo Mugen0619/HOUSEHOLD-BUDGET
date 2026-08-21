@@ -1,0 +1,75 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.monthLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.monthLabel input {
+  padding: 6px 8px;
+}
+
+.totals {
+  display: flex;
+  gap: 24px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-weight: 600;
+}
+
+.charts {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.chartBlock {
+  flex: 1;
+  min-width: 260px;
+  max-width: 360px;
+}
+
+.chartBlock h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+
+.breakdown h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #e5e4e7;
+  font-size: 14px;
+}
+
+.empty {
+  color: #6b6375;
+}
+
+.loading {
+  color: #6b6375;
+}
+
+.error {
+  color: #e03131;
+  background: #fff5f5;
+  border: 1px solid #ffc9c9;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin: 0;
+}

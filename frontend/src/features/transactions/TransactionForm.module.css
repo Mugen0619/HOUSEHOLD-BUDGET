@@ -1,0 +1,88 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 320px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field label,
+.legend {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.field input[type='date'],
+.field input[type='number'],
+.field select,
+.field textarea {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.radioLabel {
+  font-weight: normal;
+  margin-right: 16px;
+}
+
+.amountRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.amountRow input {
+  flex: 1;
+}
+
+.fieldError {
+  color: #e03131;
+  font-size: 12px;
+  margin: 0;
+}
+
+.formError {
+  color: #e03131;
+  background: #fff5f5;
+  border: 1px solid #ffc9c9;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.actions button {
+  border-radius: 4px;
+  padding: 8px 20px;
+  cursor: pointer;
+}
+
+.actions button[type='submit'] {
+  background: #4c6ef5;
+  color: #fff;
+  border: none;
+}
+
+.actions button[type='submit']:disabled,
+.actions button[type='button']:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.actions button[type='button'] {
+  background: #fff;
+  border: 1px solid #ccc;
+}
