@@ -1,0 +1,45 @@
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 24px;
+  margin: 0 0 16px;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid #e5e4e7;
+}
+
+.tab,
+.activeTab {
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 15px;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+}
+
+.tab {
+  color: #6b6375;
+}
+
+.activeTab {
+  color: #4c6ef5;
+  border-bottom-color: #4c6ef5;
+  font-weight: 600;
+}
+
+.main {
+  padding-top: 8px;
+}
