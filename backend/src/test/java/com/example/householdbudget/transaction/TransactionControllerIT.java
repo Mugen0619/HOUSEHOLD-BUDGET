@@ -27,10 +27,19 @@ class TransactionControllerIT {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private TransactionRepository transactionRepository;
+
     private Long categoryId;
 
+    // The test Spring context (and its in-memory H2 database) is cached and
+    // shared across all IT test classes for the whole test run, so each test
+    // must clear shared tables before seeding its own data to avoid colliding
+    // with the categories.(name, type) unique constraint.
     @BeforeEach
     void setUp() {
+        transactionRepository.deleteAll();
+        categoryRepository.deleteAll();
         Category category = categoryRepository.save(new Category("食費", CategoryType.EXPENSE));
         categoryId = category.getId();
     }
