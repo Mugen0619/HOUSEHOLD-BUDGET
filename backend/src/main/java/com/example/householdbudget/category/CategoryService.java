@@ -5,6 +5,7 @@ import java.util.List;
 import com.example.householdbudget.common.CategoryInUseException;
 import com.example.householdbudget.common.ResourceNotFoundException;
 import com.example.householdbudget.common.ValidationException;
+import com.example.householdbudget.recurringtransaction.RecurringTransactionRepository;
 import com.example.householdbudget.transaction.TransactionRepository;
 
 import org.springframework.stereotype.Service;
@@ -15,10 +16,13 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final TransactionRepository transactionRepository;
+    private final RecurringTransactionRepository recurringTransactionRepository;
 
-    public CategoryService(CategoryRepository categoryRepository, TransactionRepository transactionRepository) {
+    public CategoryService(CategoryRepository categoryRepository, TransactionRepository transactionRepository,
+                            RecurringTransactionRepository recurringTransactionRepository) {
         this.categoryRepository = categoryRepository;
         this.transactionRepository = transactionRepository;
+        this.recurringTransactionRepository = recurringTransactionRepository;
     }
 
     @Transactional(readOnly = true)
@@ -51,7 +55,7 @@ public class CategoryService {
     public void delete(Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("カテゴリが見つかりません: id=" + id));
-        if (transactionRepository.existsByCategoryId(id)) {
+        if (transactionRepository.existsByCategoryId(id) || recurringTransactionRepository.existsByCategoryId(id)) {
             throw new CategoryInUseException("このカテゴリは使用中のため削除できません");
         }
         categoryRepository.delete(category);

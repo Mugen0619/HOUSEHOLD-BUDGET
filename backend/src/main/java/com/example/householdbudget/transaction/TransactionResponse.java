@@ -12,6 +12,8 @@ public record TransactionResponse(
         CategoryType type,
         CategoryRef category,
         String memo,
+        TransactionSource source,
+        Long recurringTransactionId,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
@@ -26,6 +28,8 @@ public record TransactionResponse(
                 transaction.getType(),
                 new CategoryRef(transaction.getCategory().getId(), transaction.getCategory().getName()),
                 transaction.getMemo(),
+                transaction.getSource(),
+                transaction.getRecurringTransactionId(),
                 transaction.getCreatedAt(),
                 transaction.getUpdatedAt()
         );

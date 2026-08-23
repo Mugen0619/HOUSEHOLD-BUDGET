@@ -9,8 +9,15 @@
 ### 収支記録一覧
 ![収支記録一覧](docs/screenshots/transaction-list.png)
 
+定期支出テンプレートから自動生成された記録には「定期」バッジが表示されます。
+
 ### カテゴリ管理
 ![カテゴリ管理](docs/screenshots/category-management.png)
+
+### 定期支出テンプレート管理
+![定期支出テンプレート管理](docs/screenshots/recurring-transactions.png)
+
+家賃・サブスクリプション等、毎月同じ内容で発生する収支のテンプレートを登録できます。アプリ起動中に、実行日を過ぎている当月分未生成のテンプレートがあれば自動的に収支記録が生成されます（詳細は [docs/data-design.md 5章](docs/data-design.md#5-定期支出の自動生成バッチ) を参照）。
 
 ### 月次集計（表 + 円グラフ）
 ![月次集計](docs/screenshots/monthly-summary.png)
@@ -82,4 +89,4 @@ npm run build          # 型チェック込みのビルド確認
 
 ## 実装状況
 
-要件定義書の機能要件（No.1〜8）に対する実装状況は [docs/requirements.md 5.2章](docs/requirements.md#52-実装状況) を参照してください。
+要件定義書の機能要件（No.1〜9）に対する実装状況は [docs/requirements.md 5.2章](docs/requirements.md#52-実装状況) を参照してください。

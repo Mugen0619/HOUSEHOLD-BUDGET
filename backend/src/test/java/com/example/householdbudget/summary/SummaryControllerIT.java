@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import com.example.householdbudget.category.Category;
 import com.example.householdbudget.category.CategoryRepository;
 import com.example.householdbudget.category.CategoryType;
+import com.example.householdbudget.recurringtransaction.RecurringTransactionRepository;
 import com.example.householdbudget.transaction.Transaction;
 import com.example.householdbudget.transaction.TransactionRepository;
 
@@ -32,6 +33,9 @@ class SummaryControllerIT {
     @Autowired
     private TransactionRepository transactionRepository;
 
+    @Autowired
+    private RecurringTransactionRepository recurringTransactionRepository;
+
     private Long salaryCategoryId;
     private Long foodCategoryId;
 
@@ -42,6 +46,7 @@ class SummaryControllerIT {
     @BeforeEach
     void setUp() {
         transactionRepository.deleteAll();
+        recurringTransactionRepository.deleteAll();
         categoryRepository.deleteAll();
         Category salary = categoryRepository.save(new Category("給与", CategoryType.INCOME));
         Category food = categoryRepository.save(new Category("食費", CategoryType.EXPENSE));
