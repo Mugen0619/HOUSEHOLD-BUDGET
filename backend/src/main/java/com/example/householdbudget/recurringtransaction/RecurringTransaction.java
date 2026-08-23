@@ -1,14 +1,9 @@
-package com.example.householdbudget.transaction;
+package com.example.householdbudget.recurringtransaction;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.example.householdbudget.category.Category;
 import com.example.householdbudget.category.CategoryType;
-import com.example.householdbudget.recurringtransaction.RecurringTransaction;
-
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,15 +20,15 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "transactions")
-public class Transaction {
+@Table(name = "recurring_transactions")
+public class RecurringTransaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private LocalDate date;
+    @Column(nullable = false, length = 20)
+    private String name;
 
     @Column(nullable = false)
     private Integer amount;
@@ -42,28 +37,15 @@ public class Transaction {
     @Column(nullable = false, length = 10)
     private CategoryType type;
 
-    // ON DELETE RESTRICT is enforced at the DB level (schema.sql); the service
-    // layer additionally refuses to delete an in-use category before it ever
-    // reaches the DB (data-design.md 1.1).
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    @Column(name = "execution_day", nullable = false)
+    private Integer executionDay;
+
     @Column(length = 500)
     private String memo;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 10)
-    private TransactionSource source;
-
-    // ON DELETE SET NULL both in schema.sql (production) and here via @OnDelete
-    // (so Hibernate's test-only ddl-auto=create-drop schema also gets the same
-    // cascade behavior) — deleting a template keeps generated records, only
-    // clearing the link (data-design.md 1.2, 5.3 保留事項).
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recurring_transaction_id")
-    @OnDelete(action = OnDeleteAction.SET_NULL)
-    private RecurringTransaction recurringTransaction;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -71,22 +53,17 @@ public class Transaction {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    protected Transaction() {
+    protected RecurringTransaction() {
     }
 
-    public Transaction(LocalDate date, Integer amount, CategoryType type, Category category, String memo) {
-        this(date, amount, type, category, memo, TransactionSource.MANUAL, null);
-    }
-
-    public Transaction(LocalDate date, Integer amount, CategoryType type, Category category, String memo,
-                        TransactionSource source, RecurringTransaction recurringTransaction) {
-        this.date = date;
+    public RecurringTransaction(String name, Integer amount, CategoryType type, Category category,
+                                 Integer executionDay, String memo) {
+        this.name = name;
         this.amount = amount;
         this.type = type;
         this.category = category;
+        this.executionDay = executionDay;
         this.memo = memo;
-        this.source = source;
-        this.recurringTransaction = recurringTransaction;
     }
 
     @PrePersist
@@ -101,11 +78,13 @@ public class Transaction {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void update(LocalDate date, Integer amount, CategoryType type, Category category, String memo) {
-        this.date = date;
+    public void update(String name, Integer amount, CategoryType type, Category category,
+                        Integer executionDay, String memo) {
+        this.name = name;
         this.amount = amount;
         this.type = type;
         this.category = category;
+        this.executionDay = executionDay;
         this.memo = memo;
     }
 
@@ -113,8 +92,8 @@ public class Transaction {
         return id;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public String getName() {
+        return name;
     }
 
     public Integer getAmount() {
@@ -129,16 +108,12 @@ public class Transaction {
         return category;
     }
 
+    public Integer getExecutionDay() {
+        return executionDay;
+    }
+
     public String getMemo() {
         return memo;
-    }
-
-    public TransactionSource getSource() {
-        return source;
-    }
-
-    public Long getRecurringTransactionId() {
-        return recurringTransaction != null ? recurringTransaction.getId() : null;
     }
 
     public LocalDateTime getCreatedAt() {

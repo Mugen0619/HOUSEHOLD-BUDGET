@@ -1,14 +1,16 @@
 import { useState } from 'react'
 import { TransactionListPage } from './features/transactions/TransactionListPage'
 import { CategoryManagementPage } from './features/categories/CategoryManagementPage'
+import { RecurringTransactionManagementPage } from './features/recurringTransactions/RecurringTransactionManagementPage'
 import { SummaryPage } from './features/summary/SummaryPage'
 import styles from './App.module.css'
 
-type Tab = 'transactions' | 'categories' | 'summary'
+type Tab = 'transactions' | 'categories' | 'recurringTransactions' | 'summary'
 
 const TABS: { key: Tab; label: string }[] = [
   { key: 'transactions', label: '一覧' },
   { key: 'categories', label: 'カテゴリ管理' },
+  { key: 'recurringTransactions', label: '定期支出' },
   { key: 'summary', label: '月次集計' },
 ]
 
@@ -35,6 +37,7 @@ function App() {
       <main className={styles.main}>
         {tab === 'transactions' && <TransactionListPage />}
         {tab === 'categories' && <CategoryManagementPage />}
+        {tab === 'recurringTransactions' && <RecurringTransactionManagementPage />}
         {tab === 'summary' && <SummaryPage />}
       </main>
     </div>

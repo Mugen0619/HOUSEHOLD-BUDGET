@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import com.example.householdbudget.category.Category;
 import com.example.householdbudget.category.CategoryRepository;
 import com.example.householdbudget.category.CategoryType;
+import com.example.householdbudget.recurringtransaction.RecurringTransactionRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,9 @@ class TransactionControllerIT {
     @Autowired
     private TransactionRepository transactionRepository;
 
+    @Autowired
+    private RecurringTransactionRepository recurringTransactionRepository;
+
     private Long categoryId;
 
     // The test Spring context (and its in-memory H2 database) is cached and
@@ -39,6 +43,7 @@ class TransactionControllerIT {
     @BeforeEach
     void setUp() {
         transactionRepository.deleteAll();
+        recurringTransactionRepository.deleteAll();
         categoryRepository.deleteAll();
         Category category = categoryRepository.save(new Category("食費", CategoryType.EXPENSE));
         categoryId = category.getId();

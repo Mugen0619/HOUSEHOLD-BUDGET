@@ -1,4 +1,5 @@
 export type TransactionType = 'INCOME' | 'EXPENSE'
+export type TransactionSource = 'MANUAL' | 'RECURRING'
 
 export interface CategoryRef {
   id: number
@@ -18,6 +19,8 @@ export interface Transaction {
   type: TransactionType
   category: CategoryRef
   memo: string | null
+  source: TransactionSource
+  recurringTransactionId: number | null
   createdAt: string
   updatedAt: string
 }
@@ -27,6 +30,27 @@ export interface CreateTransactionRequest {
   amount: number
   type: TransactionType
   categoryId: number
+  memo?: string
+}
+
+export interface RecurringTransaction {
+  id: number
+  name: string
+  amount: number
+  type: TransactionType
+  category: CategoryRef
+  executionDay: number
+  memo: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateRecurringTransactionRequest {
+  name: string
+  amount: number
+  type: TransactionType
+  categoryId: number
+  executionDay: number
   memo?: string
 }
 

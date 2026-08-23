@@ -224,6 +224,7 @@ export function TransactionListPage() {
             <th>カテゴリ</th>
             <th>金額</th>
             <th>メモ</th>
+            <th>バッジ</th>
             <th>操作</th>
           </tr>
         </thead>
@@ -235,6 +236,7 @@ export function TransactionListPage() {
               <td>{tx.category.name}</td>
               <td>{tx.amount.toLocaleString()}円</td>
               <td>{tx.memo}</td>
+              <td>{tx.source === 'RECURRING' && <span className={styles.badge}>定期</span>}</td>
               <td className={styles.actionsCell}>
                 <button type="button" onClick={() => openEditModal(tx)}>
                   編集
@@ -247,7 +249,7 @@ export function TransactionListPage() {
           ))}
           {!loading && transactions.length === 0 && (
             <tr>
-              <td colSpan={6} className={styles.empty}>
+              <td colSpan={7} className={styles.empty}>
                 データがありません
               </td>
             </tr>

@@ -3,6 +3,8 @@ package com.example.householdbudget.category;
 import java.time.LocalDate;
 
 import com.example.householdbudget.common.ErrorResponse;
+import com.example.householdbudget.recurringtransaction.RecurringTransaction;
+import com.example.householdbudget.recurringtransaction.RecurringTransactionRepository;
 import com.example.householdbudget.transaction.Transaction;
 import com.example.householdbudget.transaction.TransactionRepository;
 
@@ -32,6 +34,9 @@ class CategoryControllerIT {
     @Autowired
     private TransactionRepository transactionRepository;
 
+    @Autowired
+    private RecurringTransactionRepository recurringTransactionRepository;
+
     // The test Spring context (and its in-memory H2 database) is cached and
     // shared across all IT test classes for the whole test run, so each test
     // must clear shared tables before seeding its own data to avoid colliding
@@ -39,6 +44,7 @@ class CategoryControllerIT {
     @BeforeEach
     void setUp() {
         transactionRepository.deleteAll();
+        recurringTransactionRepository.deleteAll();
         categoryRepository.deleteAll();
     }
 
@@ -131,6 +137,20 @@ class CategoryControllerIT {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(response.getBody().status()).isEqualTo(409);
         assertThat(response.getBody().message()).isNotBlank();
+        assertThat(categoryRepository.findById(category.getId())).isPresent();
+    }
+
+    @Test
+    void delete_returnsConflict_whenCategoryIsReferencedByRecurringTransaction() {
+        Category category = categoryRepository.save(new Category("住居費", CategoryType.EXPENSE));
+        recurringTransactionRepository.save(
+                new RecurringTransaction("家賃", 80000, CategoryType.EXPENSE, category, 25, null));
+
+        ResponseEntity<ErrorResponse> response = restTemplate.exchange(
+                "/api/categories/" + category.getId(), HttpMethod.DELETE, null, ErrorResponse.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(response.getBody().status()).isEqualTo(409);
         assertThat(categoryRepository.findById(category.getId())).isPresent();
     }
 }

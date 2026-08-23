@@ -31,6 +31,42 @@ beforeEach(() => {
 })
 
 describe('TransactionListPage', () => {
+  it('shows a 定期 badge only for transactions generated from a recurring template', async () => {
+    vi.mocked(fetchTransactions).mockResolvedValue([
+      {
+        id: 1,
+        date: '2026-08-25',
+        amount: 80000,
+        type: 'EXPENSE',
+        category: { id: 1, name: '住居費' },
+        memo: '家賃',
+        source: 'RECURRING',
+        recurringTransactionId: 10,
+        createdAt: '2026-08-25T00:10:00',
+        updatedAt: '2026-08-25T00:10:00',
+      },
+      {
+        id: 2,
+        date: '2026-08-15',
+        amount: 1200,
+        type: 'EXPENSE',
+        category: { id: 1, name: '食費' },
+        memo: null,
+        source: 'MANUAL',
+        recurringTransactionId: null,
+        createdAt: '2026-08-15T20:00:00',
+        updatedAt: '2026-08-15T20:00:00',
+      },
+    ])
+
+    render(<TransactionListPage />)
+
+    await waitFor(() => {
+      expect(screen.getByText('定期')).toBeInTheDocument()
+    })
+    expect(screen.getAllByText('定期')).toHaveLength(1)
+  })
+
   it('refetches with the new type when the type filter changes', async () => {
     render(<TransactionListPage />)
 
