@@ -3,10 +3,9 @@ package com.example.householdbudget.recurringtransaction;
 import java.util.List;
 
 import com.example.householdbudget.category.Category;
-import com.example.householdbudget.category.CategoryRepository;
+import com.example.householdbudget.category.CategoryService;
 import com.example.householdbudget.category.CategoryType;
 import com.example.householdbudget.common.ResourceNotFoundException;
-import com.example.householdbudget.common.ValidationException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,12 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class RecurringTransactionService {
 
     private final RecurringTransactionRepository recurringTransactionRepository;
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
     public RecurringTransactionService(RecurringTransactionRepository recurringTransactionRepository,
-                                        CategoryRepository categoryRepository) {
+                                        CategoryService categoryService) {
         this.recurringTransactionRepository = recurringTransactionRepository;
-        this.categoryRepository = categoryRepository;
+        this.categoryService = categoryService;
     }
 
     @Transactional(readOnly = true)
@@ -33,8 +32,7 @@ public class RecurringTransactionService {
 
     @Transactional
     public RecurringTransactionResponse create(RecurringTransactionRequest request) {
-        Category category = findCategory(request.categoryId());
-        validateCategoryType(category, request.type());
+        Category category = categoryService.getForType(request.categoryId(), request.type());
 
         RecurringTransaction recurringTransaction = new RecurringTransaction(
                 request.name(), request.amount(), request.type(), category, request.executionDay(), request.memo());
@@ -45,8 +43,7 @@ public class RecurringTransactionService {
     public RecurringTransactionResponse update(Long id, RecurringTransactionRequest request) {
         RecurringTransaction recurringTransaction = recurringTransactionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("定期支出テンプレートが見つかりません: id=" + id));
-        Category category = findCategory(request.categoryId());
-        validateCategoryType(category, request.type());
+        Category category = categoryService.getForType(request.categoryId(), request.type());
 
         recurringTransaction.update(
                 request.name(), request.amount(), request.type(), category, request.executionDay(), request.memo());
@@ -59,16 +56,5 @@ public class RecurringTransactionService {
             throw new ResourceNotFoundException("定期支出テンプレートが見つかりません: id=" + id);
         }
         recurringTransactionRepository.deleteById(id);
-    }
-
-    private Category findCategory(Long categoryId) {
-        return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException("カテゴリが見つかりません: id=" + categoryId));
-    }
-
-    private void validateCategoryType(Category category, CategoryType requestedType) {
-        if (category.getType() != requestedType) {
-            throw new ValidationException("categoryId", "カテゴリの種別が一致しません");
-        }
     }
 }

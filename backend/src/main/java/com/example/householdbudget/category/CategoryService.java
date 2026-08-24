@@ -60,4 +60,16 @@ public class CategoryService {
         }
         categoryRepository.delete(category);
     }
+
+    // 収支記録・定期支出テンプレートの双方から使う共通ルックアップ（Issue #21：重複解消）。
+    // 指定した種別と一致しないカテゴリは、存在してもそのまま使わせずバリデーションエラーとする。
+    @Transactional(readOnly = true)
+    public Category getForType(Long categoryId, CategoryType expectedType) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("カテゴリが見つかりません: id=" + categoryId));
+        if (category.getType() != expectedType) {
+            throw new ValidationException("categoryId", "カテゴリの種別が一致しません");
+        }
+        return category;
+    }
 }

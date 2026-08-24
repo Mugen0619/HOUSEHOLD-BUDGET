@@ -5,11 +5,16 @@ interface ModalProps {
   title: string
   onClose: () => void
   children: ReactNode
+  closeDisabled?: boolean
 }
 
-export function Modal({ title, onClose, children }: ModalProps) {
+export function Modal({ title, onClose, children, closeDisabled = false }: ModalProps) {
+  function handleClose() {
+    if (!closeDisabled) onClose()
+  }
+
   return (
-    <div className={styles.overlay} onClick={onClose}>
+    <div className={styles.overlay} onClick={handleClose}>
       <div
         className={styles.dialog}
         role="dialog"
@@ -19,7 +24,13 @@ export function Modal({ title, onClose, children }: ModalProps) {
       >
         <div className={styles.header}>
           <h2>{title}</h2>
-          <button type="button" className={styles.closeButton} onClick={onClose} aria-label="閉じる">
+          <button
+            type="button"
+            className={styles.closeButton}
+            onClick={handleClose}
+            disabled={closeDisabled}
+            aria-label="閉じる"
+          >
             ×
           </button>
         </div>

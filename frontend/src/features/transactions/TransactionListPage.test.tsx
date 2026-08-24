@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { TransactionListPage } from './TransactionListPage'
 import { fetchTransactions } from '../../api/transactions'
 import { fetchCategories } from '../../api/categories'
+import { ApiError } from '../../api/client'
 
 vi.mock('../../api/transactions', () => ({
   fetchTransactions: vi.fn(),
@@ -65,6 +66,16 @@ describe('TransactionListPage', () => {
       expect(screen.getByText('定期')).toBeInTheDocument()
     })
     expect(screen.getAllByText('定期')).toHaveLength(1)
+  })
+
+  it('shows an error banner when the category fetch fails, instead of failing silently', async () => {
+    vi.mocked(fetchCategories).mockRejectedValue(
+      new ApiError({ status: 500, message: 'サーバーエラー' }),
+    )
+
+    render(<TransactionListPage />)
+
+    expect(await screen.findByText('予期しないエラーが発生しました')).toBeInTheDocument()
   })
 
   it('refetches with the new type when the type filter changes', async () => {

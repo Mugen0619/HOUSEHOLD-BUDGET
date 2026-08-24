@@ -5,10 +5,9 @@ import java.time.YearMonth;
 import java.util.List;
 
 import com.example.householdbudget.category.Category;
-import com.example.householdbudget.category.CategoryRepository;
+import com.example.householdbudget.category.CategoryService;
 import com.example.householdbudget.category.CategoryType;
 import com.example.householdbudget.common.ResourceNotFoundException;
-import com.example.householdbudget.common.ValidationException;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,11 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
-    public TransactionService(TransactionRepository transactionRepository, CategoryRepository categoryRepository) {
+    public TransactionService(TransactionRepository transactionRepository, CategoryService categoryService) {
         this.transactionRepository = transactionRepository;
-        this.categoryRepository = categoryRepository;
+        this.categoryService = categoryService;
     }
 
     @Transactional(readOnly = true)
@@ -48,8 +47,7 @@ public class TransactionService {
 
     @Transactional
     public TransactionResponse create(TransactionRequest request) {
-        Category category = findCategory(request.categoryId());
-        validateCategoryType(category, request.type());
+        Category category = categoryService.getForType(request.categoryId(), request.type());
 
         Transaction transaction = new Transaction(request.date(), request.amount(), request.type(), category, request.memo());
         return TransactionResponse.from(transactionRepository.save(transaction));
@@ -59,8 +57,7 @@ public class TransactionService {
     public TransactionResponse update(Long id, TransactionRequest request) {
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("収支記録が見つかりません: id=" + id));
-        Category category = findCategory(request.categoryId());
-        validateCategoryType(category, request.type());
+        Category category = categoryService.getForType(request.categoryId(), request.type());
 
         transaction.update(request.date(), request.amount(), request.type(), category, request.memo());
         return TransactionResponse.from(transaction);
@@ -72,16 +69,5 @@ public class TransactionService {
             throw new ResourceNotFoundException("収支記録が見つかりません: id=" + id);
         }
         transactionRepository.deleteById(id);
-    }
-
-    private Category findCategory(Long categoryId) {
-        return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException("カテゴリが見つかりません: id=" + categoryId));
-    }
-
-    private void validateCategoryType(Category category, CategoryType requestedType) {
-        if (category.getType() != requestedType) {
-            throw new ValidationException("categoryId", "カテゴリの種別が一致しません");
-        }
     }
 }
