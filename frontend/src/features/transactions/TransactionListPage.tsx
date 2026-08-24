@@ -47,6 +47,7 @@ export function TransactionListPage() {
 
   const [modalOpen, setModalOpen] = useState(false)
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
+  const [formSubmitting, setFormSubmitting] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<Transaction | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
@@ -54,8 +55,8 @@ export function TransactionListPage() {
   useEffect(() => {
     fetchCategories()
       .then(setCategories)
-      .catch(() => {
-        // カテゴリ取得失敗時はフィルタの選択肢が空になるだけなので致命的ではない
+      .catch((err) => {
+        setError(resolveErrorMessage(err))
       })
   }, [])
 
@@ -129,13 +130,18 @@ export function TransactionListPage() {
   }
 
   async function handleFormSubmit(data: CreateTransactionRequest) {
-    if (editingTransaction) {
-      await updateTransaction(editingTransaction.id, data)
-    } else {
-      await createTransaction(data)
+    setFormSubmitting(true)
+    try {
+      if (editingTransaction) {
+        await updateTransaction(editingTransaction.id, data)
+      } else {
+        await createTransaction(data)
+      }
+      closeModal()
+      await reload()
+    } finally {
+      setFormSubmitting(false)
     }
-    closeModal()
-    await reload()
   }
 
   function requestDelete(tx: Transaction) {
@@ -258,7 +264,11 @@ export function TransactionListPage() {
       </table>
 
       {modalOpen && (
-        <Modal title={editingTransaction ? '収支記録の編集' : '収支記録の追加'} onClose={closeModal}>
+        <Modal
+          title={editingTransaction ? '収支記録の編集' : '収支記録の追加'}
+          onClose={closeModal}
+          closeDisabled={formSubmitting}
+        >
           <TransactionForm
             initial={editingTransaction}
             onSubmit={handleFormSubmit}

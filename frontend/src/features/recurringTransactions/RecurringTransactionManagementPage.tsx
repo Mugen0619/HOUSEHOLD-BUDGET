@@ -19,6 +19,7 @@ export function RecurringTransactionManagementPage() {
 
   const [modalOpen, setModalOpen] = useState(false)
   const [editingTemplate, setEditingTemplate] = useState<RecurringTransaction | null>(null)
+  const [formSubmitting, setFormSubmitting] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<RecurringTransaction | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
@@ -56,13 +57,18 @@ export function RecurringTransactionManagementPage() {
   }
 
   async function handleFormSubmit(data: CreateRecurringTransactionRequest) {
-    if (editingTemplate) {
-      await updateRecurringTransaction(editingTemplate.id, data)
-    } else {
-      await createRecurringTransaction(data)
+    setFormSubmitting(true)
+    try {
+      if (editingTemplate) {
+        await updateRecurringTransaction(editingTemplate.id, data)
+      } else {
+        await createRecurringTransaction(data)
+      }
+      closeModal()
+      await load()
+    } finally {
+      setFormSubmitting(false)
     }
-    closeModal()
-    await load()
   }
 
   function requestDelete(template: RecurringTransaction) {
@@ -141,7 +147,11 @@ export function RecurringTransactionManagementPage() {
       </table>
 
       {modalOpen && (
-        <Modal title={editingTemplate ? '定期支出テンプレートの編集' : '定期支出テンプレートの追加'} onClose={closeModal}>
+        <Modal
+          title={editingTemplate ? '定期支出テンプレートの編集' : '定期支出テンプレートの追加'}
+          onClose={closeModal}
+          closeDisabled={formSubmitting}
+        >
           <RecurringTransactionForm
             initial={editingTemplate}
             onSubmit={handleFormSubmit}

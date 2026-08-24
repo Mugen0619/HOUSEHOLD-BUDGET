@@ -1,6 +1,8 @@
 package com.example.householdbudget.recurringtransaction;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 
 import com.example.householdbudget.category.Category;
 import com.example.householdbudget.category.CategoryType;
@@ -46,6 +48,12 @@ public class RecurringTransaction {
 
     @Column(length = 500)
     private String memo;
+
+    // 自動生成バッチの「どの年月分まで生成済みか」を示す目印（月初日で保持、NULL=未生成）。
+    // transactions.date は編集で自由に変更できるため、日付の現在値では二重生成/欠落を正しく
+    // 判定できない（Issue #21）。この目印はバッチ処理のみが更新する内部状態。
+    @Column(name = "last_generated_month")
+    private LocalDate lastGeneratedMonth;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -114,6 +122,14 @@ public class RecurringTransaction {
 
     public String getMemo() {
         return memo;
+    }
+
+    public YearMonth getLastGeneratedMonth() {
+        return lastGeneratedMonth != null ? YearMonth.from(lastGeneratedMonth) : null;
+    }
+
+    public void markGenerated(YearMonth month) {
+        this.lastGeneratedMonth = month.atDay(1);
     }
 
     public LocalDateTime getCreatedAt() {

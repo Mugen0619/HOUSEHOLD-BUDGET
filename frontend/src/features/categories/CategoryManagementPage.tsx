@@ -24,6 +24,7 @@ export function CategoryManagementPage() {
   const [error, setError] = useState<string | null>(null)
 
   const [formState, setFormState] = useState<FormState | null>(null)
+  const [formSubmitting, setFormSubmitting] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<Category | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
@@ -62,13 +63,18 @@ export function CategoryManagementPage() {
 
   async function handleFormSubmit(data: { name: string }) {
     if (!formState) return
-    if (formState.category) {
-      await updateCategory(formState.category.id, data)
-    } else {
-      await createCategory({ name: data.name, type: formState.type })
+    setFormSubmitting(true)
+    try {
+      if (formState.category) {
+        await updateCategory(formState.category.id, data)
+      } else {
+        await createCategory({ name: data.name, type: formState.type })
+      }
+      closeForm()
+      await load()
+    } finally {
+      setFormSubmitting(false)
     }
-    closeForm()
-    await load()
   }
 
   function requestDelete(category: Category) {
@@ -137,7 +143,11 @@ export function CategoryManagementPage() {
       {renderList('支出用カテゴリ', 'EXPENSE', expenseCategories)}
 
       {formState && (
-        <Modal title={formState.category ? 'カテゴリの編集' : 'カテゴリの追加'} onClose={closeForm}>
+        <Modal
+          title={formState.category ? 'カテゴリの編集' : 'カテゴリの追加'}
+          onClose={closeForm}
+          closeDisabled={formSubmitting}
+        >
           <CategoryForm
             type={formState.type}
             initial={formState.category}

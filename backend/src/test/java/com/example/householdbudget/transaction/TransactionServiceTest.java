@@ -1,10 +1,8 @@
 package com.example.householdbudget.transaction;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
-import com.example.householdbudget.category.Category;
-import com.example.householdbudget.category.CategoryRepository;
+import com.example.householdbudget.category.CategoryService;
 import com.example.householdbudget.category.CategoryType;
 import com.example.householdbudget.common.ValidationException;
 
@@ -25,15 +23,15 @@ class TransactionServiceTest {
     private TransactionRepository transactionRepository;
 
     @Mock
-    private CategoryRepository categoryRepository;
+    private CategoryService categoryService;
 
     @InjectMocks
     private TransactionService transactionService;
 
     @Test
-    void create_throwsValidationException_whenCategoryTypeDoesNotMatchTransactionType() {
-        Category incomeCategory = new Category("給与", CategoryType.INCOME);
-        when(categoryRepository.findById(1L)).thenReturn(Optional.of(incomeCategory));
+    void create_propagatesValidationException_whenCategoryTypeDoesNotMatchTransactionType() {
+        when(categoryService.getForType(1L, CategoryType.EXPENSE))
+                .thenThrow(new ValidationException("categoryId", "カテゴリの種別が一致しません"));
 
         TransactionRequest request = new TransactionRequest(
                 LocalDate.of(2026, 8, 1), 1000, CategoryType.EXPENSE, 1L, null);

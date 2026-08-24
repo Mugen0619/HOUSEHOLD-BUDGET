@@ -2,8 +2,7 @@ package com.example.householdbudget.recurringtransaction;
 
 import java.util.Optional;
 
-import com.example.householdbudget.category.Category;
-import com.example.householdbudget.category.CategoryRepository;
+import com.example.householdbudget.category.CategoryService;
 import com.example.householdbudget.category.CategoryType;
 import com.example.householdbudget.common.ResourceNotFoundException;
 import com.example.householdbudget.common.ValidationException;
@@ -25,15 +24,15 @@ class RecurringTransactionServiceTest {
     private RecurringTransactionRepository recurringTransactionRepository;
 
     @Mock
-    private CategoryRepository categoryRepository;
+    private CategoryService categoryService;
 
     @InjectMocks
     private RecurringTransactionService recurringTransactionService;
 
     @Test
-    void create_throwsValidationException_whenCategoryTypeDoesNotMatchTemplateType() {
-        Category incomeCategory = new Category("給与", CategoryType.INCOME);
-        when(categoryRepository.findById(1L)).thenReturn(Optional.of(incomeCategory));
+    void create_propagatesValidationException_whenCategoryTypeDoesNotMatchTemplateType() {
+        when(categoryService.getForType(1L, CategoryType.EXPENSE))
+                .thenThrow(new ValidationException("categoryId", "カテゴリの種別が一致しません"));
 
         RecurringTransactionRequest request = new RecurringTransactionRequest(
                 "家賃", 80000, CategoryType.EXPENSE, 1L, 25, "家賃");
@@ -55,7 +54,7 @@ class RecurringTransactionServiceTest {
         assertThatThrownBy(() -> recurringTransactionService.update(99L, request))
                 .isInstanceOf(ResourceNotFoundException.class);
 
-        verifyNoInteractions(categoryRepository);
+        verifyNoInteractions(categoryService);
     }
 
     @Test

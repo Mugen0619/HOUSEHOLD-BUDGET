@@ -1,6 +1,7 @@
 package com.example.householdbudget.common;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -53,11 +54,24 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(409, ex.getMessage(), List.of()));
     }
 
-    // Defense-in-depth: DB-level ON DELETE RESTRICT (data-design.md 1.1) in case
-    // the service-layer in-use check is bypassed (e.g. race condition).
+    // Defense-in-depth: DB-level constraints (data-design.md 1.1) in case the
+    // service-layer check is bypassed (e.g. a race between concurrent requests).
+    // Distinguish which constraint fired so a duplicate name on create/update
+    // doesn't surface the "in-use, can't delete" message (Issue #21).
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        String detail = mostSpecificMessage(ex).toLowerCase(Locale.ROOT);
+        if (detail.contains("uq_categories_name_type")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(400, "入力値が不正です",
+                            List.of(new ErrorResponse.FieldErrorDetail("name", "このカテゴリ名は既に使用されています"))));
+        }
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ErrorResponse(409, "このカテゴリは使用中のため削除できません", List.of()));
+    }
+
+    private String mostSpecificMessage(DataIntegrityViolationException ex) {
+        String message = ex.getMostSpecificCause().getMessage();
+        return message != null ? message : "";
     }
 }

@@ -17,8 +17,12 @@ export function ConfirmDialog({
   cancelLabel = 'キャンセル',
   confirmDisabled = false,
 }: ConfirmDialogProps) {
+  function handleCancel() {
+    if (!confirmDisabled) onCancel()
+  }
+
   return (
-    <div className={styles.overlay} onClick={onCancel}>
+    <div className={styles.overlay} onClick={handleCancel}>
       <div
         className={styles.dialog}
         role="alertdialog"
@@ -27,7 +31,12 @@ export function ConfirmDialog({
       >
         <p className={styles.message}>{message}</p>
         <div className={styles.actions}>
-          <button type="button" onClick={onCancel} className={styles.cancelButton}>
+          <button
+            type="button"
+            onClick={handleCancel}
+            disabled={confirmDisabled}
+            className={styles.cancelButton}
+          >
             {cancelLabel}
           </button>
           <button
